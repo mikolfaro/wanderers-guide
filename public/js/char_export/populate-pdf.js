@@ -36,7 +36,7 @@ socket.on("returnCharExportPDFInfo", function(charInfo, extraData){
 let g_featMap = null;
 
 // HARDCODED Names of final profs and PDF fields
-  
+
 // Field names: https://www.pdfescape.com
 
 async function charExportGeneratePDF(charInfo, extraData) {
@@ -84,6 +84,10 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const wisScoreField = form.getTextField('WISDOM');
   const chaScoreField = form.getTextField('CHARISMA');
 
+  const fortProfBonusValue = getProfNumber(profToNumUp(profMap.get('Fortitude')), charInfo.character.level);
+  const reflexProfBonusValue = getProfNumber(profToNumUp(profMap.get('Reflex')), charInfo.character.level);
+  const willProfBonusValue = getProfNumber(profToNumUp(profMap.get('Will')), charInfo.character.level);
+
   let strMod = 0;
   let dexMod = 0;
   let conMod = 0;
@@ -127,7 +131,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
       default: break;
     }
   }
-  
+
 
   const totalSpeedField = form.getTextField('Text18');
   const otherSpeedsField = form.getTextField('MOVEMENT TYPES NOTES');
@@ -135,10 +139,10 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const totalClassDCField = form.getTextField('Text10');
 
   // //
-  const totalACField = form.getTextField('Text3');
+  const totalACField = form.getTextField('AC');
 
-  const acDexModField = form.getTextField('Text12');
-  const acCapField = form.getTextField('Text13');
+  const acDexModField = form.getTextField('AC_DEX');
+  const acCapField = form.getTextField('AC_CAP');
   const acProfBonusField = form.getTextField('PROF');
   const acProfTrainedField = form.getCheckBox('Check Box4');
   const acProfExpertField = form.getCheckBox('Check Box5');
@@ -169,7 +173,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const heavyArmorMBox = form.getCheckBox('Check Box42');
   const heavyArmorLBox = form.getCheckBox('Check Box43');
   setProfCheckBox(profMap.get('Heavy_Armor'), heavyArmorTBox, heavyArmorEBox, heavyArmorMBox, heavyArmorLBox);
-  
+
   const shieldACBonusField = form.getTextField('Text16');
   const shieldHardnessField = form.getTextField('HARDNESS');
   const shieldHealthAndBTField = form.getTextField('BT');
@@ -200,7 +204,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const percepMBox = form.getCheckBox('Check Box26');
   const percepLBox = form.getCheckBox('Check Box27');
   setProfCheckBox(profMap.get('Perception'), percepTBox, percepEBox, percepMBox, percepLBox);
-  
+
   const sensesField = form.getTextField('SENSES');
   let sensesText = '';
   for(let sense of charInfo.build.senses){
@@ -217,7 +221,9 @@ async function charExportGeneratePDF(charInfo, extraData) {
   totalFortField.setText(signNumber(totalSaves[0].Bonus)+'');
 
   const fortConModField = form.getTextField('CON');
+  fortConModField.setText(signNumber(conMod)+'');
   const fortProfBonusField = form.getTextField('PROF_2');
+  fortProfBonusField.setText(signNumber(fortProfBonusValue)+'');
   const fortItemBonusField = form.getTextField('ITEM_2');
 
   const fortTBox = form.getCheckBox('Check Box8');
@@ -230,7 +236,9 @@ async function charExportGeneratePDF(charInfo, extraData) {
   totalReflexField.setText(signNumber(totalSaves[1].Bonus)+'');
 
   const reflexDexModField = form.getTextField('DEX');
+  reflexDexModField.setText(signNumber(dexMod)+'');
   const reflexProfBonusField = form.getTextField('PROF_3');
+  reflexProfBonusField.setText(signNumber(reflexProfBonusValue)+'');
   const reflexItemBonusField = form.getTextField('ITEM_3');
 
   const reflexTBox = form.getCheckBox('Check Box12');
@@ -238,12 +246,14 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const reflexMBox = form.getCheckBox('Check Box14');
   const reflexLBox = form.getCheckBox('Check Box15');
   setProfCheckBox(profMap.get('Reflex'), reflexTBox, reflexEBox, reflexMBox, reflexLBox);
-  
+
   const totalWillField = form.getTextField('Text15');
   totalWillField.setText(signNumber(totalSaves[1].Bonus)+'');
 
   const willWisModField = form.getTextField('WIS');
+  willWisModField.setText(signNumber(wisMod)+'');
   const willProfBonusField = form.getTextField('PROF_4');
+  willProfBonusField.setText(signNumber(willProfBonusValue)+'');
   const willItemBonusField = form.getTextField('ITEM_4');
 
   const willTBox = form.getCheckBox('Check Box16');
@@ -258,7 +268,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const weap1DmgDiceField = form.getTextField('DICE');
   const weap1TraitsField = form.getTextField('TRAITS');
   const weap1StrField = form.getTextField('STR_2');
-  
+
   const weap2NameField = form.getTextField('Weapon_2');
   const weap2HitBonusField = form.getTextField('Text38');
   const weap2DmgDiceField = form.getTextField('DICE_2');
@@ -283,7 +293,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const weap5DmgDiceField = form.getTextField('DICE_5');
   const weap5TraitsField = form.getTextField('TRAITS_5');
   const weap5SpeField = form.getTextField('undefined_2');
-  
+
   const weap6NameField = form.getTextField('Weapon_6');
   const weap6HitBonusField = form.getTextField('Text42');
   const weap6DmgDiceField = form.getTextField('DICE_6');
@@ -345,7 +355,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const diploBonusField = form.getTextField('Text24');
   diploBonusField.setText(signNumber(totalSkills[5].Bonus)+'');
 
-  const intimBonusField = form.getTextField('Text25');
+  const intimBonusField = form.getTextField('INTIMIDATION');
   intimBonusField.setText(signNumber(totalSkills[6].Bonus)+'');
 
   const medicineBonusField = form.getTextField('Text28');
@@ -375,16 +385,16 @@ async function charExportGeneratePDF(charInfo, extraData) {
   const thieveryBonusField = form.getTextField('Text36');
   thieveryBonusField.setText(signNumber(totalSkills[15].Bonus)+'');
 
-  const oneLoreNameField = form.getTextField('INTIMIDATION');
-  const oneLoreBonusField = form.getTextField('Text26');
+  const oneLoreNameField = form.getTextField('LORE_DESC_1');
+  const oneLoreBonusField = form.getTextField('LORE_1');
   let lore1Data = totalSkills[16];
   if(lore1Data != null){
     oneLoreNameField.setText(lore1Data.Name.replace(' Lore', ''));
     oneLoreBonusField.setText(signNumber(lore1Data.Bonus)+'');
   }
 
-  const twoLoreNameField = form.getTextField('LORE');
-  const twoLoreBonusField = form.getTextField('Text27');
+  const twoLoreNameField = form.getTextField('LORE_DESC_2');
+  const twoLoreBonusField = form.getTextField('LORE_2');
   let lore2Data = totalSkills[17];
   if(lore2Data != null){
     twoLoreNameField.setText(lore2Data.Name.replace(' Lore', ''));
@@ -438,7 +448,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
       const other1WeapLBox = form.getCheckBox('Check Box151');
       setProfCheckBox(prof,
           other1WeapTBox, other1WeapEBox, other1WeapMBox, other1WeapLBox);
-    
+
       const other1WeapField = form.getTextField('Weapon Proficiencies');
       other1WeapField.setText(profNames);
 
@@ -451,7 +461,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
       const other2WeapLBox = form.getCheckBox('Check Box155');
       setProfCheckBox(prof,
           other2WeapTBox, other2WeapEBox, other2WeapMBox, other2WeapLBox);
-    
+
       const other2WeapField = form.getTextField('L');
       other2WeapField.setText(profNames);
 
@@ -606,6 +616,7 @@ async function charExportGeneratePDF(charInfo, extraData) {
   //
 
   totalACField.setText(charInfo.stats.totalAC+'');
+  acDexModField.setText(signNumber(dexMod)+'');
   totalSpeedField.setText(charInfo.stats.totalSpeed+'');
 
   maxHPField.setText(charInfo.stats.maxHP+'');
@@ -740,11 +751,15 @@ async function charExportGeneratePDF(charInfo, extraData) {
     form.getTextField('BELIEFS').setText(extraInfo.beliefs);
   }
 
+  if (extraInfo?.alignment) {
+    form.getTextField('Alignment').setText(extraInfo.alignment)
+  }
+
   const pdfBytes = await pdfDoc.save();
 
   // Trigger the browser to download the PDF document
   download(pdfBytes, charInfo.character.name+" - Character Sheet.pdf", "application/pdf");
-  
+
   $('.modal-card-close').trigger('click');
   stopSpinnerSubLoader();
 }
@@ -772,7 +787,7 @@ function findFeat(featsArray, sourceType, sourceLevel, sourceCode=null){
       return featData.source == 'chosenFeats' && featData.sourceType == sourceType && featData.sourceLevel == sourceLevel && featData.sourceCode == sourceCode;
     });
   }
-  
+
   if(featData != null && featData.value != null){
     return featData.value;
   } else {
